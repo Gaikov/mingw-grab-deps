@@ -19,6 +19,6 @@ module.exports = {
         extensions: ['.tsx', '.ts', '.js']
     },
     output: {
-	    filename: "winapp-grab-deps.js"
+	    filename: "mingw-grab-deps.js"
     }
 };

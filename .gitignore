@@ -1,5 +1,4 @@
 .idea
-dist
 *.iml
 package-lock.json
 node_modules

@@ -2,7 +2,7 @@
   "name": "winapp-grap-deps",
   "version": "1.0.0-dev.0",
   "description": "",
-  "main": "winapp-grab-deps.js",
+  "main": "mingw-grab-deps.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack"
