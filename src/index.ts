@@ -1,5 +1,6 @@
 import {FileUtils} from "./file/FileUtils";
 import {FilePath} from "./file/FilePath";
+import {Grabber} from "./Grabber";
 
 console.log("Hello from GROm!");
 
@@ -7,6 +8,9 @@ if (process.argv.length < 3) {
     console.error("executable is not specified!");
     process.exit(-1);
 }
+
+const targetExe = new FilePath(process.argv[2]);
+console.log("processing exec: ", targetExe.path);
 
 const config = FileUtils.readJson(new FilePath(process.cwd() + "/config.json"));
 if (!config) {
@@ -19,8 +23,11 @@ if (!ntldd) {
     process.exit(-1);
 }
 
+const grabber = new Grabber();
+grabber.grab(ntldd, targetExe.path).then(()=> {
+    console.log("DONE");
+});
 
 
-console.log("DONE");
 
 
