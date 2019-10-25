@@ -19,6 +19,10 @@ export class Grabber {
             }
         }
 
+        for (const filePath of result.concat()) {
+            result = result.concat(await this.grab(ntldd, filePath));
+        }
+
         return result;
     }
 }
