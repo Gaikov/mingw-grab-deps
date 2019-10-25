@@ -10,7 +10,6 @@
   "keywords": [],
   "author": "Roman Gaikov (c) http://grom-games.com",
   "license": "ISC",
-
   "devDependencies": {
     "@types/fs-extra": "^8.0.0",
     "@types/tmp": "^0.1.0",

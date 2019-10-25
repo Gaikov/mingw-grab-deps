@@ -8,8 +8,7 @@ export class Utils {
                     console.log(err);
                     return null;
                 }
-
-                return stdout;
+                resolve(stdout);
             })
         });
     }
