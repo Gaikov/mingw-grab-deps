@@ -2,7 +2,6 @@
  * Created by Roman.Gaikov on 3/21/2019
  */
 import {FilePath} from "./FilePath";
-import * as fs from "fs-extra";
 import {readJSONSync, writeJSONSync} from "fs-extra";
 import {
     readFileSync,
@@ -53,25 +52,5 @@ export class FileUtils {
             return false;
         }
         return true;
-    }
-
-    public static recursiveFound(targetDirectory: FilePath, folderHandler: (folder: FilePath) => void, fileHandler: (file: FilePath) => void) {
-        if (!targetDirectory.isFolder) {
-            return;
-        }
-        fs.readdirSync(targetDirectory.path)
-            .forEach(file => {
-                const filePath: FilePath = targetDirectory.resolvePath(file);
-                if (filePath.isFolder) {
-                    if (folderHandler) {
-                        folderHandler(filePath);
-                    }
-                    this.recursiveFound(filePath, folderHandler, fileHandler);
-                } else {
-                    if (fileHandler) {
-                        fileHandler(filePath);
-                    }
-                }
-            });
     }
 }
