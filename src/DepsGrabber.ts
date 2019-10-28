@@ -1,28 +1,28 @@
 import {Utils} from "./Utils";
 
-export class Grabber {
+export class DepsGrabber {
 
-    async grab(ntldd: string, targetFile: string): Promise<string[]> {
+    async grab(ntldd: string, targetFile: string, result: string[]): Promise<void> {
 
         console.log("checking: ", targetFile);
         const output = await Utils.execute(ntldd + " " + targetFile);
 
         const reg = /\b[^)]*\)/g;
         const list = output.match(reg);
-        let result: string[] = [];
+        const deptList: string[] = [];
 
         for (const line of list) {
             const filePath = line.match(/(?<==>\s*)[^(]*/)[0].trim();
-            if (filePath.indexOf("SYSTEM32") < 0) {
+            if (filePath.indexOf("SYSTEM32") < 0 && result.indexOf(filePath) < 0) {
                 console.log("dependency:", filePath);
-                result.push(filePath);
+                deptList.push(filePath);
             }
         }
 
-        for (const filePath of result.concat()) {
-            result = result.concat(await this.grab(ntldd, filePath));
+        for (const filePath of deptList.concat()) {
+            await this.grab(ntldd, filePath, result);
         }
 
-        return result;
+        result.push(...deptList);
     }
 }

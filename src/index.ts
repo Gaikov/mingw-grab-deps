@@ -1,6 +1,6 @@
 import {FileUtils} from "./file/FileUtils";
 import {FilePath} from "./file/FilePath";
-import {Grabber} from "./Grabber";
+import {DepsGrabber} from "./DepsGrabber";
 
 console.log("Hello from GROm!");
 
@@ -23,10 +23,14 @@ if (!ntldd) {
     process.exit(-1);
 }
 
-const grabber = new Grabber();
-grabber.grab(ntldd, targetExe.path).then(()=> {
+const grabber = new DepsGrabber();
+
+const result: string[] = [];
+grabber.grab(ntldd, targetExe.path, result).then(()=> {
+    console.log(result.length, "dependencies found", result);
     console.log("DONE");
 });
+
 
 
 

@@ -3,7 +3,7 @@
  */
 import * as fs from "fs-extra";
 import {copySync, removeSync} from "fs-extra";
-import {normalize, relative} from "path";
+import {normalize, relative, dirname} from "path";
 import chalk from "chalk";
 import {unlinkSync} from "fs";
 import {dirSync} from "tmp";
@@ -22,6 +22,10 @@ export class FilePath {
 
     set path(value: string) {
         this._path = normalize(value).replace(/\\/g, "/");
+    }
+
+    get parent(): string {
+        return dirname(this._path);
     }
 
     get name(): string {
