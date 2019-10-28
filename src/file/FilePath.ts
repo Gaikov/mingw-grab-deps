@@ -2,8 +2,15 @@
  * Created by Roman.Gaikov on 3/21/2019
  */
 import * as fs from "fs-extra";
-import {copySync, removeSync} from "fs-extra";
-import {normalize, relative, dirname} from "path";
+import {
+    copySync,
+    removeSync
+} from "fs-extra";
+import {
+    normalize,
+    relative,
+    dirname
+} from "path";
 import chalk from "chalk";
 import {unlinkSync} from "fs";
 import {dirSync} from "tmp";
@@ -24,8 +31,8 @@ export class FilePath {
         this._path = normalize(value).replace(/\\/g, "/");
     }
 
-    get parent(): string {
-        return dirname(this._path);
+    get parent(): FilePath {
+        return new FilePath(dirname(this._path));
     }
 
     get name(): string {
@@ -106,11 +113,11 @@ export class FilePath {
     }
 
     public copy(destination: FilePath): boolean {
-        console.log(null, `copy '${chalk.blue(this.path)}' to '${chalk.blue(destination.path)}'`);
+        console.log(`copy '${this.path}' to '${destination.path}'`);
         try {
-            copySync(this.path, destination.path);
+            copySync(this.path, destination.path, {overwrite: true});
         } catch (e) {
-            console.error(null, `Can't copy '${chalk.blue(this.path)}' to '${chalk.blue(destination.path)}'`);
+            console.error(`Can't copy '${this.path}' to '${destination.path}'`);
             return false;
         }
 

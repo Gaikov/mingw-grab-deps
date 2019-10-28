@@ -27,7 +27,15 @@ const grabber = new DepsGrabber();
 
 const result: string[] = [];
 grabber.grab(ntldd, targetExe.path, result).then(()=> {
-    console.log(result.length, "dependencies found", result);
+
+    const folder = targetExe.parent;
+
+    for (const filePath of result) {
+        const src = new FilePath(filePath);
+        const dst = folder.resolvePath(src.name);
+        src.copy(dst);
+    }
+
     console.log("DONE");
 });
 
