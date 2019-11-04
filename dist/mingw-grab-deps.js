@@ -10049,6 +10049,36 @@ exports.Args = Args;
 
 /***/ }),
 
+/***/ "./src/Config.ts":
+/*!***********************!*\
+  !*** ./src/Config.ts ***!
+  \***********************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const FileUtils_1 = __webpack_require__(/*! ./file/FileUtils */ "./src/file/FileUtils.ts");
+const FilePath_1 = __webpack_require__(/*! ./file/FilePath */ "./src/file/FilePath.ts");
+class Config {
+    constructor(args) {
+        const configPath = args.getArg("--config");
+        this._data = {};
+        if (configPath) {
+            this._data = FileUtils_1.FileUtils.readJson(new FilePath_1.FilePath(configPath)) || {};
+        }
+        this._args = args;
+    }
+    getOption(name) {
+        return this._args.getArg("--" + name) || this._data[name];
+    }
+}
+exports.Config = Config;
+
+
+/***/ }),
+
 /***/ "./src/DepsGrabber.ts":
 /*!****************************!*\
   !*** ./src/DepsGrabber.ts ***!
@@ -10255,6 +10285,68 @@ exports.FilePath = FilePath;
 
 /***/ }),
 
+/***/ "./src/file/FileUtils.ts":
+/*!*******************************!*\
+  !*** ./src/file/FileUtils.ts ***!
+  \*******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const fs_extra_1 = __webpack_require__(/*! fs-extra */ "./node_modules/fs-extra/lib/index.js");
+const fs_1 = __webpack_require__(/*! fs */ "fs");
+class FileUtils {
+    static readText(file) {
+        try {
+            return fs_1.readFileSync(file.path, "utf8");
+        }
+        catch (error) {
+            console.warn("can't read text: ", file.path);
+        }
+        return null;
+    }
+    static writeText(file, text) {
+        try {
+            fs_1.writeFileSync(file.path, text);
+            return false;
+        }
+        catch (error) {
+            console.warn("can't write text: ", file.path);
+        }
+        return true;
+    }
+    static readJson(file) {
+        console.info("...reading json: ", file.path);
+        try {
+            return fs_extra_1.readJSONSync(file.path, { encoding: "utf8" });
+        }
+        catch (error) {
+            console.warn("can't read json: ", file.path);
+        }
+        return null;
+    }
+    static writeJson(file, json) {
+        console.info("...writing json: ", file.path);
+        if (!file.createFolder()) {
+            return false;
+        }
+        try {
+            fs_extra_1.writeJSONSync(file.path, json, { encoding: "utf8", spaces: "\t" });
+        }
+        catch (error) {
+            console.warn("can't write json:", file.path);
+            return false;
+        }
+        return true;
+    }
+}
+exports.FileUtils = FileUtils;
+
+
+/***/ }),
+
 /***/ "./src/index.ts":
 /*!**********************!*\
   !*** ./src/index.ts ***!
@@ -10268,9 +10360,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const FilePath_1 = __webpack_require__(/*! ./file/FilePath */ "./src/file/FilePath.ts");
 const DepsGrabber_1 = __webpack_require__(/*! ./DepsGrabber */ "./src/DepsGrabber.ts");
 const Args_1 = __webpack_require__(/*! ./Args */ "./src/Args.ts");
+const Config_1 = __webpack_require__(/*! ./Config */ "./src/Config.ts");
 console.log("Hello from GROm!");
 const args = new Args_1.Args(process.argv);
-const inputBinary = args.getArg("--input-binary");
+const config = new Config_1.Config(args);
+const inputBinary = config.getOption("input-binary");
 if (!inputBinary) {
     console.error("binary file is not specified!");
     process.exit(-1);
@@ -10280,14 +10374,14 @@ if (binaryPath.isFolder || !binaryPath.exists) {
     console.error("binary file is invalid!");
     process.exit(-1);
 }
-const ntldd = args.getArg("--ntldd");
+const ntldd = config.getOption("ntldd");
 if (!ntldd) {
     console.error("ntldd is not specified");
     process.exit(-1);
 }
-const folderPath = args.getArg("--output-folder");
+const folderPath = config.getOption("output-folder");
 const folder = folderPath ? new FilePath_1.FilePath(folderPath) : binaryPath.parent;
-if (!folder.isFolder) {
+if (!folder.createFolder() || !folder.isFolder) {
     console.error("invalid output folder");
     process.exit(-1);
 }

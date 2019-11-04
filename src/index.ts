@@ -1,11 +1,13 @@
 import {FilePath} from "./file/FilePath";
 import {DepsGrabber} from "./DepsGrabber";
 import {Args} from "./Args";
+import {Config} from "./Config";
 
 console.log("Hello from GROm!");
 const args = new Args(process.argv);
+const config = new Config(args);
 
-const inputBinary = args.getArg("--input-binary");
+const inputBinary = config.getOption("input-binary");
 if (!inputBinary) {
     console.error("binary file is not specified!");
     process.exit(-1);
@@ -17,22 +19,22 @@ if (binaryPath.isFolder || !binaryPath.exists) {
     process.exit(-1);
 }
 
-const ntldd = args.getArg("--ntldd");
+const ntldd = config.getOption("ntldd");
 if (!ntldd) {
     console.error("ntldd is not specified");
     process.exit(-1);
 }
 
-const folderPath = args.getArg("--output-folder");
+const folderPath = config.getOption("output-folder");
 const folder = folderPath ? new FilePath(folderPath) : binaryPath.parent;
-if (!folder.isFolder) {
+if (!folder.createFolder() || !folder.isFolder) {
     console.error("invalid output folder");
     process.exit(-1);
 }
 
 const grabber = new DepsGrabber();
 const result: string[] = [];
-grabber.grab(ntldd, binaryPath.path, result).then(()=> {
+grabber.grab(ntldd, binaryPath.path, result).then(() => {
 
     for (const filePath of result) {
         const src = new FilePath(filePath);
